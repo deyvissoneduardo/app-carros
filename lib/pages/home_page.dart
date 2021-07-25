@@ -19,13 +19,33 @@ class HomePage extends StatelessWidget {
   }
 
   _body() {
-    List<Carro> carros = CarrosApi.getCarros();
+    return FutureBuilder(
+      future: CarrosApi.getCarros(),
+      builder: (context, AsyncSnapshot snapshot) {
+        if (snapshot.hasError) {
+          print(snapshot.hasError);
+          return Text(
+            'Nao foi possivel carregar',
+            style: TextStyle(
+              fontSize: 20,
+              color: Colors.red,
+            ),
+          );
+        }
+        if (!snapshot.hasData) Center(child: CircularProgressIndicator());
+        List<CarroModel> carros = snapshot.data;
+        return _listView(carros);
+      },
+    );
+  }
+
+  _listView(List<CarroModel> carros) {
     return Container(
       padding: EdgeInsets.all(16),
       child: ListView.builder(
-        itemCount: carros.length,
+        itemCount: carros.isNotEmpty ? carros.length : 0,
         itemBuilder: (context, index) {
-          Carro c = carros[index];
+          CarroModel c = carros[index];
           return Card(
             color: Colors.grey[150],
             child: Container(
@@ -34,11 +54,15 @@ class HomePage extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Center(
-                    child: Image.network(
-                      '${c.urlFoto}',
-                      width: 250,
-                    ),
-                  ),
+                      child: c.urlFoto != null
+                          ? Image.network(
+                              '${c.urlFoto}',
+                              width: 250,
+                            )
+                          : Image.network(
+                              'http://www.livroandroid.com.br/livro/carros/esportivos/Ferrari_FF.png',
+                              width: 250,
+                            )),
                   Text(
                     '${c.nome}',
                     maxLines: 1,
