@@ -1,8 +1,10 @@
+import 'package:app_carros/data/api_response.dart';
 import 'package:app_carros/data/login_api.dart';
 import 'package:app_carros/models/usuario_model.dart';
 import 'package:app_carros/pages/home_page.dart';
 import 'package:app_carros/pages/widgets/app_buttom.dart';
 import 'package:app_carros/pages/widgets/app_text.dart';
+import 'package:app_carros/utils/alert.dart';
 import 'package:app_carros/utils/navigator.dart';
 import 'package:flutter/material.dart';
 
@@ -67,11 +69,13 @@ class LoginPage extends StatelessWidget {
     if (!formOk) return;
     String login = _tLogin.text;
     String senha = _tSenha.text;
-    UsuarioModel usuarioModel = await LoginApi.login(login, senha);
-    // ignore: unnecessary_null_comparison
-    if (usuarioModel != null) {
-      print(usuarioModel);
+    ApiResponse response = await LoginApi.login(login, senha);
+    if (response.ok) {
+      // ignore: unused_local_variable
+      UsuarioModel usuarioModel = response.result;
       push(context, HomePage());
+    } else {
+      alert(context, response.msg!);
     }
   }
 }
