@@ -1,12 +1,18 @@
+import 'package:app_carros/data/login_api.dart';
+import 'package:app_carros/models/usuario_model.dart';
+import 'package:app_carros/pages/home_page.dart';
 import 'package:app_carros/pages/widgets/app_buttom.dart';
 import 'package:app_carros/pages/widgets/app_text.dart';
+import 'package:app_carros/utils/navigator.dart';
 import 'package:flutter/material.dart';
 
+// ignore: must_be_immutable
 class LoginPage extends StatelessWidget {
-  LoginPage({Key? key}) : super(key: key);
+  LoginPage({Key? key, this.context}) : super(key: key);
   final _tLogin = TextEditingController();
   final _tSenha = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  BuildContext? context;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,11 +20,11 @@ class LoginPage extends StatelessWidget {
         centerTitle: true,
         title: Text('Carros'),
       ),
-      body: _body(),
+      body: _body(context),
     );
   }
 
-  _body() {
+  _body(context) {
     return Form(
       key: _formKey,
       child: Container(
@@ -40,11 +46,15 @@ class LoginPage extends StatelessWidget {
               hint: '123',
               obscureText: true,
               controller: _tSenha,
+              validator: (value) {
+                if (value!.isEmpty) return 'Campo Invalido';
+                return null;
+              },
             ),
             const SizedBox(height: 10),
             AppButtom(
               text: 'Login',
-              onPressed: _onClickLogin,
+              onPressed: () => _onClickLogin(context),
             )
           ],
         ),
@@ -52,8 +62,16 @@ class LoginPage extends StatelessWidget {
     );
   }
 
-  void _onClickLogin() {
+  _onClickLogin(context) async {
     bool formOk = _formKey.currentState!.validate();
     if (!formOk) return;
+    String login = _tLogin.text;
+    String senha = _tSenha.text;
+    UsuarioModel usuarioModel = await LoginApi.login(login, senha);
+    // ignore: unnecessary_null_comparison
+    if (usuarioModel != null) {
+      print(usuarioModel);
+      push(context, HomePage());
+    }
   }
 }
