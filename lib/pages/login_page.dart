@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 // ignore: must_be_immutable
 class LoginPage extends StatelessWidget {
   LoginPage({Key? key, this.context}) : super(key: key);
-  final _tLogin = TextEditingController();
-  final _tSenha = TextEditingController();
+  final _tLogin = TextEditingController(text: 'user');
+  final _tSenha = TextEditingController(text: '123');
   final _formKey = GlobalKey<FormState>();
   BuildContext? context;
   @override

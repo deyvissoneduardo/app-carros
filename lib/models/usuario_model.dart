@@ -14,11 +14,18 @@ class UsuarioModel {
     login = map['login'];
     email = map['email'];
     token = map['token'];
+    roles = map['token'] != null ? getRoles(map) : null;
   }
 
   @override
   String toString() {
     return 'UsuarioModel(nome: $nome, login: $login, email: $email, token: $token, roles: $roles)';
+  }
+
+  static List<String> getRoles(Map<String, dynamic> map) {
+    List list = map['roles'];
+    List<String> roles = list.map((role) => role.toString()).toList();
+    return roles;
   }
 
   Map<String, dynamic> toMap() {
