@@ -1,3 +1,4 @@
+import 'package:app_carros/drawer_list.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -14,6 +15,7 @@ class HomePage extends StatelessWidget {
         alignment: Alignment.center,
         child: Text('Logado'),
       ),
+      drawer: DrawerList(),
     );
   }
 }
