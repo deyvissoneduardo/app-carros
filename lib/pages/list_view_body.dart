@@ -28,11 +28,13 @@ class _ListViewBodyState extends State<ListViewBody>
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasError) {
           print(snapshot.hasError);
-          return Text(
-            'Nao foi possivel carregar',
-            style: TextStyle(
-              fontSize: 20,
-              color: Colors.red,
+          return Center(
+            child: Text(
+              'Nao foi possivel carregar',
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.red,
+              ),
             ),
           );
         }

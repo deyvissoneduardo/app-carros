@@ -17,10 +17,22 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final tLogin = TextEditingController(text: 'user');
-  final tSenha = TextEditingController(text: '123');
+  final tLogin = TextEditingController();
+  final tSenha = TextEditingController();
   final formKey = GlobalKey<FormState>();
   bool showProgress = false;
+
+  @override
+  void initState() {
+    Future<UsuarioModel?> future = UsuarioModel.get();
+    future.then((UsuarioModel? usuarioModel) {
+      if (usuarioModel != null) {
+        push(context, HomePage(), replace: true);
+      }
+    });
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
