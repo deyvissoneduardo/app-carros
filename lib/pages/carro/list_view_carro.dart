@@ -105,7 +105,6 @@ class _ListViewCarroState extends State<ListViewCarro>
                       children: [
                         TextButton(
                             onPressed: () {
-                              print('aqui ${c.id}');
                               push(context, CarroPage(carroModel: c));
                             },
                             child: Text('DETALHES')),
