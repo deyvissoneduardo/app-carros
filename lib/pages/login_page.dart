@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_carros/data/api_response.dart';
 import 'package:app_carros/data/login_api.dart';
 import 'package:app_carros/models/usuario_model.dart';
@@ -20,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   final tLogin = TextEditingController();
   final tSenha = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  bool showProgress = false;
+  final _streamController = StreamController<bool>();
 
   @override
   void initState() {
@@ -31,6 +33,12 @@ class _LoginPageState extends State<LoginPage> {
       }
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _streamController.close();
+    super.dispose();
   }
 
   @override
@@ -72,11 +80,15 @@ class _LoginPageState extends State<LoginPage> {
               },
             ),
             const SizedBox(height: 10),
-            AppButtom(
-              text: 'Login',
-              onPressed: () => _onClickLogin(context),
-              showProgess: showProgress,
-            )
+            StreamBuilder<bool>(
+                stream: _streamController.stream,
+                builder: (context, snapshot) {
+                  return AppButtom(
+                    text: 'Login',
+                    onPressed: () => _onClickLogin(context),
+                    showProgess: snapshot.data ?? false,
+                  );
+                })
           ],
         ),
       ),
@@ -88,9 +100,7 @@ class _LoginPageState extends State<LoginPage> {
     if (!formOk) return;
     String login = tLogin.text;
     String senha = tSenha.text;
-    setState(() {
-      showProgress = true;
-    });
+    _streamController.add(true);
     ApiResponse response = await LoginApi.login(login, senha);
     if (response.ok) {
       // ignore: unused_local_variable
@@ -99,8 +109,6 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       alert(context, response.msg!);
     }
-    setState(() {
-      showProgress = false;
-    });
+    _streamController.add(false);
   }
 }

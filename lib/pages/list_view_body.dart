@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:app_carros/data/carros_api.dart';
 import 'package:app_carros/models/carro.dart';
+import 'package:app_carros/pages/carro/carro_page.dart';
+import 'package:app_carros/utils/navigator.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
@@ -13,21 +17,34 @@ class ListViewBody extends StatefulWidget {
 
 class _ListViewBodyState extends State<ListViewBody>
     with AutomaticKeepAliveClientMixin<ListViewBody> {
+  final _streamController = StreamController<List<CarroModel>>();
   @override
   bool get wantKeepAlive => true;
 
   @override
-  Widget build(BuildContext context) {
-    super.build(context);
-    return _body();
+  void initState() {
+    _loadData();
+    super.initState();
   }
 
-  _body() {
-    return FutureBuilder(
-      future: CarrosApi.getCarros(widget.tipo),
+  @override
+  void dispose() {
+    _streamController.close();
+    super.dispose();
+  }
+
+  _loadData() async {
+    List<CarroModel> listCarro = await CarrosApi.getCarros(widget.tipo);
+    _streamController.add(listCarro);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return StreamBuilder(
+      stream: _streamController.stream,
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasError) {
-          print(snapshot.hasError);
           return Center(
             child: Text(
               'Nao foi possivel carregar',
@@ -38,9 +55,18 @@ class _ListViewBodyState extends State<ListViewBody>
             ),
           );
         }
-        if (!snapshot.hasData) Center(child: CircularProgressIndicator());
-        List<CarroModel> carros = snapshot.data;
-        return _listView(carros);
+        if (!snapshot.hasData) {
+          Center(
+              child: CircularProgressIndicator(
+            backgroundColor: Colors.orange,
+          ));
+        }
+
+        List<CarroModel>? carros = snapshot.data;
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        return _listView(carros!);
       },
     );
   }
@@ -83,7 +109,12 @@ class _ListViewBodyState extends State<ListViewBody>
                     data: ButtonBarTheme.of(context),
                     child: ButtonBar(
                       children: [
-                        TextButton(onPressed: () {}, child: Text('DETALHES')),
+                        TextButton(
+                            onPressed: () {
+                              print('aqui ${c.id}');
+                              push(context, CarroPage(carroModel: c));
+                            },
+                            child: Text('DETALHES')),
                         TextButton(onPressed: () {}, child: Text('SHARED')),
                       ],
                     ),
