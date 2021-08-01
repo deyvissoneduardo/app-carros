@@ -1,62 +1,62 @@
-import 'dart:convert';
+import 'dart:convert' as convert;
 
-import 'package:flutter/foundation.dart';
+import 'package:app_carros/utils/prefes.dart';
 
 class UsuarioModel {
-  String? nome;
   String? login;
+  String? nome;
   String? email;
+  String? urlFoto;
   String? token;
   List<String>? roles;
 
-  UsuarioModel.fromJson(Map<String, dynamic> map) {
-    nome = map['nome'];
-    login = map['login'];
-    email = map['email'];
-    token = map['token'];
-    roles = map['token'] != null ? getRoles(map) : null;
+  UsuarioModel(
+      {this.login,
+      this.nome,
+      this.email,
+      this.urlFoto,
+      this.token,
+      this.roles});
+
+  UsuarioModel.fromJson(Map<String, dynamic> json) {
+    login = json['login'];
+    nome = json['nome'];
+    email = json['email'];
+    urlFoto = json['urlFoto'];
+    token = json['token'];
+    roles = json['roles'].cast<String>();
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['login'] = this.login;
+    data['nome'] = this.nome;
+    data['email'] = this.email;
+    data['urlFoto'] = this.urlFoto;
+    data['token'] = this.token;
+    data['roles'] = this.roles;
+    return data;
+  }
+
+  void save() {
+    Map map = toJson();
+    String json = convert.json.encode(map);
+    Prefs.setString('user.prefes', json);
+  }
+
+  static Future<UsuarioModel?> get() async {
+    String json = await Prefs.getString('user.prefes');
+    if (json.isEmpty) return null;
+    Map<String, dynamic> map = convert.json.decode(json);
+    return UsuarioModel.fromJson(map);
   }
 
   @override
   String toString() {
-    return 'UsuarioModel(nome: $nome, login: $login, email: $email, token: $token, roles: $roles)';
+    return 'UsuarioModel(login: $login, nome: $nome, email: $email, urlFoto: $urlFoto, token: $token, roles: $roles)';
   }
 
-  static List<String> getRoles(Map<String, dynamic> map) {
-    List list = map['roles'];
-    List<String> roles = list.map((role) => role.toString()).toList();
-    return roles;
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'nome': nome,
-      'login': login,
-      'email': email,
-      'token': token,
-    };
-  }
-
-  String toJson() => json.encode(toMap());
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is UsuarioModel &&
-        other.nome == nome &&
-        other.login == login &&
-        other.email == email &&
-        other.token == token &&
-        listEquals(other.roles, roles);
-  }
-
-  @override
-  int get hashCode {
-    return nome.hashCode ^
-        login.hashCode ^
-        email.hashCode ^
-        token.hashCode ^
-        roles.hashCode;
+  static void clear() {
+    Prefs.setString('user.prefes', '');
   }
 }

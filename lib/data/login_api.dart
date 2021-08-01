@@ -31,8 +31,10 @@ class LoginApi {
 
       if (response.statusCode == 200) {
         final user = UsuarioModel.fromJson(map);
+        user.save();
         return ApiResponse.ok(user);
       }
+
       return ApiResponse.error(map['error']);
     } on Exception catch (e) {
       print(e);
