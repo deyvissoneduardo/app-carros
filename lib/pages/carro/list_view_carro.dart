@@ -1,48 +1,42 @@
-import 'dart:async';
-
-import 'package:app_carros/data/carros_api.dart';
 import 'package:app_carros/models/carro.dart';
+import 'package:app_carros/pages/carro/carro_bloc.dart';
 import 'package:app_carros/pages/carro/carro_page.dart';
 import 'package:app_carros/utils/navigator.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
-class ListViewBody extends StatefulWidget {
+class ListViewCarro extends StatefulWidget {
   String tipo;
-  ListViewBody({Key? key, required this.tipo}) : super(key: key);
+  ListViewCarro({Key? key, required this.tipo}) : super(key: key);
 
   @override
-  _ListViewBodyState createState() => _ListViewBodyState();
+  _ListViewCarroState createState() => _ListViewCarroState();
 }
 
-class _ListViewBodyState extends State<ListViewBody>
-    with AutomaticKeepAliveClientMixin<ListViewBody> {
-  final _streamController = StreamController<List<CarroModel>>();
+class _ListViewCarroState extends State<ListViewCarro>
+    with AutomaticKeepAliveClientMixin<ListViewCarro> {
+  final bloc = CarroBloc();
+
   @override
   bool get wantKeepAlive => true;
 
   @override
   void initState() {
-    _loadData();
+    bloc.loadData(widget.tipo);
     super.initState();
   }
 
   @override
   void dispose() {
-    _streamController.close();
+    bloc.dispose();
     super.dispose();
-  }
-
-  _loadData() async {
-    List<CarroModel> listCarro = await CarrosApi.getCarros(widget.tipo);
-    _streamController.add(listCarro);
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     return StreamBuilder(
-      stream: _streamController.stream,
+      stream: bloc.straem,
       builder: (context, AsyncSnapshot snapshot) {
         if (snapshot.hasError) {
           return Center(

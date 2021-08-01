@@ -1,15 +1,15 @@
 import 'dart:async';
 
 import 'package:app_carros/data/api_response.dart';
-import 'package:app_carros/data/login_api.dart';
 import 'package:app_carros/models/usuario_model.dart';
+import 'package:app_carros/pages/login/login_bloc.dart';
 import 'package:app_carros/utils/alert.dart';
 import 'package:app_carros/utils/navigator.dart';
 import 'package:flutter/material.dart';
 
-import 'home_page.dart';
-import 'widgets/app_buttom.dart';
-import 'widgets/app_text.dart';
+import '../home_page.dart';
+import '../widgets/app_buttom.dart';
+import '../widgets/app_text.dart';
 
 class LoginPage extends StatefulWidget {
   LoginPage({Key? key}) : super(key: key);
@@ -22,7 +22,7 @@ class _LoginPageState extends State<LoginPage> {
   final tLogin = TextEditingController();
   final tSenha = TextEditingController();
   final formKey = GlobalKey<FormState>();
-  final _streamController = StreamController<bool>();
+  final bloc = LoginBloc();
 
   @override
   void initState() {
@@ -37,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    _streamController.close();
+    bloc.dispose();
     super.dispose();
   }
 
@@ -81,7 +81,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             const SizedBox(height: 10),
             StreamBuilder<bool>(
-                stream: _streamController.stream,
+                stream: bloc.stream,
                 builder: (context, snapshot) {
                   return AppButtom(
                     text: 'Login',
@@ -100,8 +100,7 @@ class _LoginPageState extends State<LoginPage> {
     if (!formOk) return;
     String login = tLogin.text;
     String senha = tSenha.text;
-    _streamController.add(true);
-    ApiResponse response = await LoginApi.login(login, senha);
+    ApiResponse response = await bloc.login(login, senha);
     if (response.ok) {
       // ignore: unused_local_variable
       UsuarioModel usuarioModel = response.result;
@@ -109,6 +108,5 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       alert(context, response.msg!);
     }
-    _streamController.add(false);
   }
 }
