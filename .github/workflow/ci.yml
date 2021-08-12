@@ -16,6 +16,8 @@ jobs:
       - uses: subosito/flutter-action@v1
         with:
           channel: "stable"
+      - run: git clone https://github.com/flutter/flutter.git -b stable
+      - run: export PATH="$PATH:`pwd`/flutter/bin"
       - run: flutter pub get
       - run: flutter analyze
       # - run: flutter test
