@@ -1,7 +1,5 @@
 import 'package:app_carros/models/carro.dart';
 import 'package:app_carros/pages/carro/carro_bloc.dart';
-import 'package:app_carros/pages/carro/carro_page.dart';
-import 'package:app_carros/utils/navigator.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
@@ -105,7 +103,7 @@ class _ListViewCarroState extends State<ListViewCarro>
                       children: [
                         TextButton(
                             onPressed: () {
-                              push(context, CarroPage(carroModel: c));
+                              print('aqui ${c.id}');
                             },
                             child: Text('DETALHES')),
                         TextButton(onPressed: () {}, child: Text('SHARED')),
